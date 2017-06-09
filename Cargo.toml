@@ -5,11 +5,18 @@ authors = ["Liran Ringel <liranringel@gmail.com>"]
 description = "Use format strings to create strongly-typed data pack/unpack interfaces"
 license = "MIT/Apache-2.0"
 keywords = ["structure", "struct"]
+repository = "https://github.com/liranringel/structure"
+homepage = "https://github.com/liranringel/structure"
+documentation = "https://docs.rs/structure"
 categories = ["encoding"]
 readme = "README.md"
 include = ["Cargo.toml", "src/**/*.rs", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
 
+[badges]
+travis-ci = { repository = "liranringel/structure" }
+appveyor = { repository = "liranringel/structure" }
+
 [dependencies]
 proc-macro-hack = "0.3"
-structure_macro_impl = { path = "structure_macro_impl" }
+structure_macro_impl = { version = "0.1", path = "structure_macro_impl" }
 byteorder = "1"
