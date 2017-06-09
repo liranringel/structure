@@ -16,6 +16,9 @@ include = ["Cargo.toml", "src/**/*.rs", "README.md", "LICENSE-APACHE", "LICENSE-
 travis-ci = { repository = "liranringel/structure" }
 appveyor = { repository = "liranringel/structure" }
 
+[workspace]
+members = ["structure_macro_impl"]
+
 [dependencies]
 proc-macro-hack = "0.3"
 structure_macro_impl = { version = "0.1", path = "structure_macro_impl" }
