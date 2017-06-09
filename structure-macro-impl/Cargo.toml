@@ -1,5 +1,5 @@
 [package]
-name = "structure_macro_impl"
+name = "structure-macro-impl"
 version = "0.1.0"
 authors = ["Liran Ringel <liranringel@gmail.com>"]
 license = "MIT/Apache-2.0"
