@@ -145,7 +145,14 @@ fn unpack_fixed_buffer() {
 fn pack_and_unpack_pointer() {
     let num: u32 = 6;
     let num2: u32 = 7;
-    assert_eq!(structure!("=P").pack(unsafe { transmute::<&u32, *const c_void>(&num) }).unwrap(), unsafe { transmute::<&u32, [u8; 8]>(&num) });
+    #[cfg(target_pointer_width = "64")]
+    {
+        assert_eq!(structure!("=P").pack(unsafe { transmute::<&u32, *const c_void>(&num) }).unwrap(), unsafe { transmute::<&u32, [u8; 8]>(&num) });
+    }
+    #[cfg(target_pointer_width = "32")]
+    {
+        assert_eq!(structure!("=P").pack(unsafe { transmute::<&u32, *const c_void>(&num) }).unwrap(), unsafe { transmute::<&u32, [u8; 4]>(&num) });
+    }
     let packed_pointers = structure!("=PP").pack(unsafe { transmute::<&u32, *const c_void>(&num) }, unsafe { transmute::<&u32, *const c_void>(&num2) }).unwrap();
     let (p, p2) = structure!("=PP").unpack(packed_pointers).unwrap();
     assert_eq!(p, unsafe { transmute::<&u32, *const c_void>(&num) });
