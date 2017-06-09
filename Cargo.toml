@@ -1,0 +1,15 @@
+[package]
+name = "structure"
+version = "0.1.0"
+authors = ["Liran Ringel <liranringel@gmail.com>"]
+description = "Use format strings to create strongly-typed data pack/unpack interfaces"
+license = "MIT/Apache-2.0"
+keywords = ["structure", "struct"]
+categories = ["encoding"]
+readme = "README.md"
+include = ["Cargo.toml", "src/**/*.rs", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
+
+[dependencies]
+proc-macro-hack = "0.3"
+structure_macro_impl = { path = "structure_macro_impl" }
+byteorder = "1"
