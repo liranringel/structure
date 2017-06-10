@@ -151,6 +151,12 @@ fn build_pack_into_fn(values: &[StructValue], fn_decl_args: &Tokens, endianness:
                 }
                 tokens
             }
+            ValueKind::Padding => {
+                let number = value.repeat();
+                quote! {
+                    wtr.write_all(&[0; #number])?;
+                }
+            }
         };
         writings.append(writing);
     }
@@ -235,6 +241,12 @@ fn build_unpack_from_fn(values: &[StructValue], args: &Tokens, args_types: &Toke
                     rdr.read_exact(&mut #current_arg)?;
                 }
             }
+            ValueKind::Padding => {
+                let number = value.repeat();
+                quote! {
+                    rdr.read_exact(&mut [0; #number])?;
+                }
+            }
         };
         readings.append(reading);
     }
@@ -256,6 +268,7 @@ fn build_args_list(values: &[StructValue]) -> (Tokens, Tokens, Tokens) {
     let mut arg_index = 0;
     for v in values {
         match *v.kind() {
+            ValueKind::Padding => continue,
             ValueKind::Buffer | ValueKind::FixedBuffer => {
                 arg_index += 1;
                 args.push(Ident::from(format!("_{}", arg_index)));
@@ -349,6 +362,7 @@ fn char_to_type(c: char) -> (&'static str, ValueKind) {
         's' => ("&[u8]", ValueKind::Buffer),
         'S' => ("&[u8]", ValueKind::FixedBuffer),
         'P' => ("*const c_void", ValueKind::Pointer),
+        'x' => ("u8", ValueKind::Padding),
         _ => panic!("Unknown format: '{}'", c),
     }
 }
@@ -410,6 +424,7 @@ enum ValueKind {
     Buffer,
     FixedBuffer,
     Pointer,
+    Padding,
 }
 
 struct StructValue {

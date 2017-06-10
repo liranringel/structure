@@ -91,6 +91,7 @@
 //! 's'         |   `&[u8]`
 //! 'S'         |   `&[u8]`
 //! 'P'         |   `*const c_void`
+//! 'x'         |   padding (1 byte)
 //!
 //! * Any format character may be preceded by an integral repeat count. For example, the format string '4h'
 //! means exactly the same as 'hhhh'.
@@ -114,13 +115,15 @@
 //! specified in the format.
 //! * By default, 's' and 'S' are buffers of one byte. To create a fixed-sized buffer with ten bytes,
 //! the format would be "10S".
+//! * On unpack, 'x' skips a byte. On pack, 'x' always writes a null byte. To skip multiple bytes,
+//! prepend the length like in "10x".
 //!
 //! # Differences from Python struct library
 //!
 //! While the format strings look very similar to Python's `struct` library, there are a few differences:
 //!
 //! * Numbers' byte order is big-endian by default (e.g. u32, f64...).
-//! * There is no alignment/padding support.
+//! * There is no alignment support.
 //! * In addition to 's' (buffer) format character, that when packed, its value can be smaller than
 //! the size specified in the format, there is the 'S' format character, that the size of its value must
 //! be exactly the size specified in the format.
