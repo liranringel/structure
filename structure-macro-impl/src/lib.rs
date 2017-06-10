@@ -82,7 +82,7 @@ fn build_pack_fn(args: &Tokens, fn_decl_args: &Tokens, size: usize) -> Tokens {
     }
 }
 
-fn build_pack_into_fn(values: &Vec<StructValue>, fn_decl_args: &Tokens, endianness: &Tokens) -> Tokens {
+fn build_pack_into_fn(values: &[StructValue], fn_decl_args: &Tokens, endianness: &Tokens) -> Tokens {
     // Pack each argument
     let mut writings = Tokens::new();
     let mut arg_index = 0;
@@ -151,6 +151,12 @@ fn build_pack_into_fn(values: &Vec<StructValue>, fn_decl_args: &Tokens, endianne
                 }
                 tokens
             }
+            ValueKind::Padding => {
+                let number = value.repeat();
+                quote! {
+                    wtr.write_all(&[0; #number])?;
+                }
+            }
         };
         writings.append(writing);
     }
@@ -179,7 +185,7 @@ fn build_unpack_fn(args_types: &Tokens, size: usize) -> Tokens {
     }
 }
 
-fn build_unpack_from_fn(values: &Vec<StructValue>, args: &Tokens, args_types: &Tokens, endianness: &Tokens) -> Tokens {
+fn build_unpack_from_fn(values: &[StructValue], args: &Tokens, args_types: &Tokens, endianness: &Tokens) -> Tokens {
     let mut readings = Tokens::new();
     let mut arg_index = 0;
     for value in values {
@@ -235,6 +241,12 @@ fn build_unpack_from_fn(values: &Vec<StructValue>, args: &Tokens, args_types: &T
                     rdr.read_exact(&mut #current_arg)?;
                 }
             }
+            ValueKind::Padding => {
+                let number = value.repeat();
+                quote! {
+                    rdr.read_exact(&mut [0; #number])?;
+                }
+            }
         };
         readings.append(reading);
     }
@@ -249,13 +261,14 @@ fn build_unpack_from_fn(values: &Vec<StructValue>, args: &Tokens, args_types: &T
 }
 
 /// Build the args list, the function declaration args list and the type list
-fn build_args_list(values: &Vec<StructValue>) -> (Tokens, Tokens, Tokens) {
+fn build_args_list(values: &[StructValue]) -> (Tokens, Tokens, Tokens) {
     let mut args = vec![];
     let mut fn_decl_args = vec![];
     let mut args_types = vec![];
     let mut arg_index = 0;
     for v in values {
         match *v.kind() {
+            ValueKind::Padding => continue,
             ValueKind::Buffer | ValueKind::FixedBuffer => {
                 arg_index += 1;
                 args.push(Ident::from(format!("_{}", arg_index)));
@@ -284,7 +297,7 @@ fn build_size_fn(size: usize) -> Tokens {
     }
 }
 
-fn calc_size(values: &Vec<StructValue>) -> usize {
+fn calc_size(values: &[StructValue]) -> usize {
     let mut size = 0;
     for v in values {
         if v.type_name().starts_with("*") {
@@ -349,6 +362,7 @@ fn char_to_type(c: char) -> (&'static str, ValueKind) {
         's' => ("&[u8]", ValueKind::Buffer),
         'S' => ("&[u8]", ValueKind::FixedBuffer),
         'P' => ("*const c_void", ValueKind::Pointer),
+        'x' => ("u8", ValueKind::Padding),
         _ => panic!("Unknown format: '{}'", c),
     }
 }
@@ -410,6 +424,7 @@ enum ValueKind {
     Buffer,
     FixedBuffer,
     Pointer,
+    Padding,
 }
 
 struct StructValue {

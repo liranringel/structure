@@ -171,3 +171,12 @@ fn pack_and_unpack_typed_pointer() {
     assert_eq!(p2, &num2 as *const u8);
     assert_eq!(p3, &num3 as *const u8);
 }
+
+#[test]
+fn pack_and_unpack_padding() {
+    let s = structure!("b3xb");
+    let packed = s.pack(-1, -1).unwrap();
+    assert_eq!(packed, &[255, 0, 0, 0, 255]);
+    let (b1, b2) = s.unpack(packed).unwrap();
+    assert_eq!((b1, b2), (-1, -1));
+}
