@@ -1,4 +1,10 @@
 language: rust
+addons:
+  apt:
+    packages:
+      # Cross compiler and cross compiled C libraries
+      - gcc-multilib
+
 matrix:
   include:
     - rust: stable
@@ -6,6 +12,7 @@ matrix:
       env: TEST_32BIT="true"
     - rust: nightly
       env: TEST_32BIT="true"
+
 script:
   - cargo build --verbose
   - cargo test --verbose
