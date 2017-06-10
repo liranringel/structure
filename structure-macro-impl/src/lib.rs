@@ -42,8 +42,6 @@ proc_macro_expr_impl! {
             #[allow(unused_imports)]
             use std::os::raw::c_void;
             #[allow(unused_imports)]
-            use std::mem::transmute;
-            #[allow(unused_imports)]
             use structure::byteorder::{WriteBytesExt, ReadBytesExt, BigEndian, LittleEndian};
 
             #[allow(unused)] static TRUE_BUF: &[u8] = &[1];
@@ -109,15 +107,12 @@ fn build_pack_into_fn(values: &[StructValue], fn_decl_args: &Tokens, endianness:
                             wtr.write(buf)?;
                         });
                     } else {
-                        let pointer_type = Ident::from(value.type_name().as_str());
+                        let size = mem::size_of::<usize>();
+                        let integer_type = Ident::from(format!("u{}", size * 8));
+                        let byteorder_fn = Ident::from(format!("write_u{}", size * 8));
                         tokens.append(quote! {
-                            if cfg!(target_pointer_width = "64") {
-                                let buf = unsafe { transmute::<&#pointer_type, &[u8; 8]>(&#current_arg) };
-                                wtr.write_all(buf)?;
-                            } else {
-                                let buf = unsafe { transmute::<&#pointer_type, &[u8; 4]>(&#current_arg) };
-                                wtr.write_all(buf)?;
-                            }
+                            let v = #current_arg as #integer_type;
+                            wtr.#byteorder_fn::<#endianness>(v)?;
                         });
                     }
                 }
@@ -212,20 +207,12 @@ fn build_unpack_from_fn(values: &[StructValue], args: &Tokens, args_types: &Toke
                         });
                     } else {
                         let pointer_type = Ident::from(value.type_name().as_str());
+                        let size = mem::size_of::<usize>();
+                        let byteorder_fn = Ident::from(format!("read_u{}", size * 8));
                         tokens.append(quote! {
                             let #current_arg = {
-                                #[cfg(target_pointer_width = "64")]
-                                {
-                                    let mut buf: [u8; 8] = [0; 8];
-                                    rdr.read_exact(&mut buf)?;
-                                    unsafe { transmute::<[u8; 8], #pointer_type>(buf) }
-                                }
-                                #[cfg(target_pointer_width = "32")]
-                                {
-                                    let mut buf: [u8; 4] = [0; 4];
-                                    rdr.read_exact(&mut buf)?;
-                                    unsafe { transmute::<[u8; 4], #pointer_type>(buf) }
-                                }
+                                let v = rdr.#byteorder_fn::<#endianness>()?;
+                                v as #pointer_type
                             };
                         });
                     }
@@ -315,7 +302,7 @@ fn calc_size(values: &[StructValue]) -> usize {
             "u64" => mem::size_of::<u64>(),
             "f32" => mem::size_of::<f32>(),
             "f64" => mem::size_of::<f64>(),
-            t if t.starts_with("*") => if cfg!(target_pointer_width = "64") { 8 } else { 4 },
+            t if t.starts_with("*") => mem::size_of::<usize>(),
             _ => panic!("Unknown type: '{}'", v.type_name()),
         };
         size += type_size * v.repeat();
