@@ -2,7 +2,7 @@
 name = "structure"
 version = "0.1.0"
 authors = ["Liran Ringel <liranringel@gmail.com>"]
-description = "Use format strings to create strongly-typed data pack/unpack interfaces"
+description = "Use format strings to create strongly-typed data pack/unpack interfaces."
 license = "MIT/Apache-2.0"
 keywords = ["structure", "struct"]
 repository = "https://github.com/liranringel/structure"

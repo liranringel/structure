@@ -2,6 +2,7 @@
 name = "structure-macro-impl"
 version = "0.1.0"
 authors = ["Liran Ringel <liranringel@gmail.com>"]
+description = "Procedural macro crate for the structure crate."
 license = "MIT/Apache-2.0"
 readme = "README.md"
 include = ["Cargo.toml", "src/**/*.rs", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
