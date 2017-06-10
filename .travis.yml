@@ -3,6 +3,12 @@ rust:
   - stable
   - beta
   - nightly
+addons:
+  apt:
+    packages:
+      # Cross compiler and cross compiled C libraries
+      - gcc-multilib
+
 script:
   - cargo build --verbose
   - cargo test --verbose
