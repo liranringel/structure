@@ -6,6 +6,7 @@ rust:
 script:
   - cargo build --verbose
   - cargo test --verbose
+  - rustup target add i686-unknown-linux-gnu
   - cargo build --target=i686-unknown-linux-gnu --verbose
   - cargo test --target=i686-unknown-linux-gnu --verbose
   - cargo doc
