@@ -2,6 +2,12 @@
 
 **Use format strings to create strongly-typed data pack/unpack interfaces (inspired by Python's `struct` library).**
 
+[![Build Status](https://travis-ci.org/liranringel/structure.svg?branch=master)](https://travis-ci.org/liranringel/structure)
+[![Build status](https://ci.appveyor.com/api/projects/status/tiwjo6q4eete0nmh/branch/master?svg=true)](https://ci.appveyor.com/project/liran-ringel/structure/branch/master)
+[![Crates.io](https://img.shields.io/crates/v/structure.svg)](https://crates.io/crates/structure)
+
+[Documentation](https://docs.rs/structure)
+
 ## Installation
 
 Add this to your `Cargo.toml`:
