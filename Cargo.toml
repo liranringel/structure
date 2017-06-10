@@ -1,6 +1,6 @@
 [package]
 name = "structure"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Liran Ringel <liranringel@gmail.com>"]
 description = "Use format strings to create strongly-typed data pack/unpack interfaces."
 license = "MIT/Apache-2.0"
@@ -18,7 +18,7 @@ appveyor = { repository = "liranringel/structure" }
 
 [dependencies]
 proc-macro-hack = "0.3"
-structure-macro-impl = { version = "0.1.0", path = "structure-macro-impl" }
+structure-macro-impl = { version = "0.1.1", path = "structure-macro-impl" }
 byteorder = "1"
 
 [workspace]

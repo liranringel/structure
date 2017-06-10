@@ -1,6 +1,6 @@
 [package]
 name = "structure-macro-impl"
-version = "0.1.0"
+version = "0.1.1" # remember to update the dependency in the root crate
 authors = ["Liran Ringel <liranringel@gmail.com>"]
 description = "Procedural macro crate for the structure crate."
 license = "MIT/Apache-2.0"
