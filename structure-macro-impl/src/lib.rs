@@ -6,7 +6,6 @@ extern crate proc_macro_hack;
 extern crate quote;
 
 use std::mem;
-use std::os::raw::c_void;
 use std::string::String;
 use quote::{Tokens, Ident};
 
