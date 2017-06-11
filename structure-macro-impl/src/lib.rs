@@ -33,7 +33,7 @@ proc_macro_expr_impl! {
         let unpack_fn = build_unpack_fn(&args_types, size);
         let unpack_from_fn = build_unpack_from_fn(&values, &args, &args_types, &endianness);
         let size_fn = build_size_fn(size);
-        let output = quote!{{
+        let output = quote! {{
             #[derive(Debug)]
             #[allow(non_camel_case_types)]
             struct #struct_name;
@@ -41,8 +41,6 @@ proc_macro_expr_impl! {
             use std::io::{Result, Write, Read, Error, ErrorKind, Cursor};
             #[allow(unused_imports)]
             use std::os::raw::c_void;
-            #[allow(unused_imports)]
-            use std::mem::transmute;
             #[allow(unused_imports)]
             use structure::byteorder::{WriteBytesExt, ReadBytesExt, BigEndian, LittleEndian};
 
@@ -92,7 +90,7 @@ fn build_pack_into_fn(values: &[StructValue], fn_decl_args: &Tokens, endianness:
                 let mut tokens = Tokens::new();
                 for _ in 0..value.repeat() {
                     arg_index += 1;
-                    let current_arg = Ident::from("_".to_owned() + &arg_index.to_string());
+                    let current_arg = Ident::from(format!("_{}", arg_index));
                     if *value.kind() == ValueKind::Number {
                         let byteorder_fn = Ident::from(format!("write_{}", value.type_name()));
                         match value.type_name().as_str() {
@@ -109,15 +107,12 @@ fn build_pack_into_fn(values: &[StructValue], fn_decl_args: &Tokens, endianness:
                             wtr.write(buf)?;
                         });
                     } else {
-                        let pointer_type = Ident::from(value.type_name().as_str());
+                        let size = mem::size_of::<usize>();
+                        let integer_type = Ident::from(format!("u{}", size * 8));
+                        let byteorder_fn = Ident::from(format!("write_u{}", size * 8));
                         tokens.append(quote! {
-                            if cfg!(target_pointer_width = "64") {
-                                let buf = unsafe { transmute::<&#pointer_type, &[u8; 8]>(&#current_arg) };
-                                wtr.write_all(buf)?;
-                            } else {
-                                let buf = unsafe { transmute::<&#pointer_type, &[u8; 4]>(&#current_arg) };
-                                wtr.write_all(buf)?;
-                            }
+                            let v = #current_arg as #integer_type;
+                            wtr.#byteorder_fn::<#endianness>(v)?;
                         });
                     }
                 }
@@ -125,7 +120,7 @@ fn build_pack_into_fn(values: &[StructValue], fn_decl_args: &Tokens, endianness:
             }
             ValueKind::Buffer | ValueKind::FixedBuffer => {
                 arg_index += 1;
-                let current_arg = Ident::from("_".to_owned() + &arg_index.to_string());
+                let current_arg = Ident::from(format!("_{}", arg_index));
                 let buffer_length = value.repeat();
                 let length_check = if *value.kind() == ValueKind::Buffer {
                     // If the type is `ValueKind::Buffer`, and the given buffer is smaller than the
@@ -194,12 +189,12 @@ fn build_unpack_from_fn(values: &[StructValue], args: &Tokens, args_types: &Toke
                 let mut tokens = Tokens::new();
                 for _ in 0..value.repeat() {
                     arg_index += 1;
-                    let current_arg = Ident::from("_".to_owned() + &arg_index.to_string());
+                    let current_arg = Ident::from(format!("_{}", arg_index));
                     if *value.kind() == ValueKind::Number {
                         let byteorder_fn = Ident::from(format!("read_{}", value.type_name()));
                         match value.type_name().as_str() {
                             "u8" | "i8" => {
-                                tokens.append(quote! {let #current_arg =rdr.#byteorder_fn()?;});
+                                tokens.append(quote! { let #current_arg = rdr.#byteorder_fn()?;});
                             }
                             _ => {
                                 tokens.append(quote! { let #current_arg = rdr.#byteorder_fn::<#endianness>()?;});
@@ -212,20 +207,12 @@ fn build_unpack_from_fn(values: &[StructValue], args: &Tokens, args_types: &Toke
                         });
                     } else {
                         let pointer_type = Ident::from(value.type_name().as_str());
+                        let size = mem::size_of::<usize>();
+                        let byteorder_fn = Ident::from(format!("read_u{}", size * 8));
                         tokens.append(quote! {
                             let #current_arg = {
-                                #[cfg(target_pointer_width = "64")]
-                                {
-                                    let mut buf: [u8; 8] = [0; 8];
-                                    rdr.read_exact(&mut buf)?;
-                                    unsafe { transmute::<[u8; 8], #pointer_type>(buf) }
-                                }
-                                #[cfg(target_pointer_width = "32")]
-                                {
-                                    let mut buf: [u8; 4] = [0; 4];
-                                    rdr.read_exact(&mut buf)?;
-                                    unsafe { transmute::<[u8; 4], #pointer_type>(buf) }
-                                }
+                                let v = rdr.#byteorder_fn::<#endianness>()?;
+                                v as #pointer_type
                             };
                         });
                     }
@@ -234,7 +221,7 @@ fn build_unpack_from_fn(values: &[StructValue], args: &Tokens, args_types: &Toke
             }
             ValueKind::Buffer | ValueKind::FixedBuffer => {
                 arg_index += 1;
-                let current_arg = Ident::from("_".to_owned() + &arg_index.to_string());
+                let current_arg = Ident::from(format!("_{}", arg_index));
                 let buffer_length = value.repeat();
                 quote! {
                     let mut #current_arg = vec![0; #buffer_length];
@@ -280,7 +267,7 @@ fn build_args_list(values: &[StructValue]) -> (Tokens, Tokens, Tokens) {
                     arg_index += 1;
                     args.push(Ident::from(format!("_{}", arg_index)));
                     fn_decl_args.push(Ident::from(format!("_{}: {}", arg_index, v.type_name())));
-                    args_types.push(Ident::from(v.type_name().to_owned()));
+                    args_types.push(Ident::from(v.type_name().as_str()));
                 }
             }
         }
@@ -315,7 +302,7 @@ fn calc_size(values: &[StructValue]) -> usize {
             "u64" => mem::size_of::<u64>(),
             "f32" => mem::size_of::<f32>(),
             "f64" => mem::size_of::<f64>(),
-            t if t.starts_with("*") => if cfg!(target_pointer_width = "64") { 8 } else { 4 },
+            t if t.starts_with("*") => mem::size_of::<usize>(),
             _ => panic!("Unknown type: '{}'", v.type_name()),
         };
         size += type_size * v.repeat();
