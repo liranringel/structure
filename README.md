@@ -16,8 +16,13 @@ Add this to your `Cargo.toml`:
 [dependencies]
 structure = "0.1"
 ```
+Add this to your module:
 
-And this to your crate root:
+```rust
+use structure::{structure, structure_impl};
+```
+
+Or for pre-2018 versions of rust, add this to your crate root:
 
 ```rust
 #[macro_use]
