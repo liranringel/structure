@@ -1,9 +1,22 @@
 language: rust
-rust:
-  - stable
-  - beta
-  - nightly
+addons:
+  apt:
+    packages:
+      # Cross compiler and cross compiled C libraries
+      - gcc-multilib
+
+matrix:
+  include:
+    - rust: stable
+    - rust: beta
+      env: TEST_32BIT="true"
+    - rust: nightly
+      env: TEST_32BIT="true"
+
 script:
   - cargo build --verbose
   - cargo test --verbose
+  - rustup target add i686-unknown-linux-gnu
+  - if [[ "$TEST_32BIT" == "true" ]]; then cargo build --target=i686-unknown-linux-gnu --verbose ; fi
+  - if [[ "$TEST_32BIT" == "true" ]]; then cargo test --target=i686-unknown-linux-gnu --verbose ; fi
   - cargo doc

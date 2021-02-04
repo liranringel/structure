@@ -6,7 +6,6 @@ extern crate proc_macro_hack;
 extern crate quote;
 
 use std::mem;
-use std::os::raw::c_void;
 use std::string::String;
 use quote::{Tokens, Ident};
 
@@ -287,9 +286,6 @@ fn build_size_fn(size: usize) -> Tokens {
 fn calc_size(values: &[StructValue]) -> usize {
     let mut size = 0;
     for v in values {
-        if v.type_name().starts_with("*") {
-            mem::size_of::<*const c_void>();
-        }
         let type_size = match v.type_name().as_str() {
             "i8" => mem::size_of::<i8>(),
             "&[u8]" | "u8" => mem::size_of::<u8>(),
