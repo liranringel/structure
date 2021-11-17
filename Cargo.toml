@@ -1,6 +1,6 @@
 [package]
 name = "structure"
-version = "0.1.3"
+version = "0.1.2"
 authors = ["Liran Ringel <liranringel@gmail.com>"]
 description = "Use format strings to create strongly-typed data pack/unpack interfaces."
 license = "MIT/Apache-2.0"
@@ -17,7 +17,7 @@ travis-ci = { repository = "liranringel/structure" }
 appveyor = { repository = "liranringel/structure" }
 
 [dependencies]
-proc-macro-hack = "0.4"
+proc-macro-hack = { git = "https://github.com/Cosmo-CoDiOS/proc-macro-hack" }
 structure-macro-impl = { version = "0.1.2", path = "structure-macro-impl" }
 byteorder = { version = "1", default-features = false }
 
