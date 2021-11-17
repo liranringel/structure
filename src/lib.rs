@@ -1,3 +1,5 @@
+#![no_std]
+
 //! Use format strings to create strongly-typed data pack/unpack interfaces (inspired by Python's `struct` library).
 //!
 //!
