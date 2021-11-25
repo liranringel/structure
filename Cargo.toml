@@ -1,5 +1,6 @@
 [package]
 name = "structure"
+edition = "2018"
 version = "0.1.2"
 authors = ["Liran Ringel <liranringel@gmail.com>"]
 description = "Use format strings to create strongly-typed data pack/unpack interfaces."
@@ -17,8 +18,11 @@ travis-ci = { repository = "liranringel/structure" }
 appveyor = { repository = "liranringel/structure" }
 
 [dependencies]
-proc-macro-hack = "0.4"
 structure-macro-impl = { version = "0.1.2", path = "structure-macro-impl" }
-byteorder = "1"
+byteorder = { version = "1", default-features = false 
+
+[features]
+std = ["byteorder/std"]
+default = ["std"]
 
 [workspace]

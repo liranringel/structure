@@ -132,23 +132,10 @@
 //! * structure!() macro takes a literal string as an argument.
 //! * It's called `structure` because `struct` is a reserved keyword in Rust.
 
-#[macro_use]
-extern crate proc_macro_hack;
+#![cfg_attr(not(feature = "std"), no_std)]
 
 #[doc(hidden)]
 pub extern crate byteorder;
 
-
-// Allow the "unused" #[macro_use] because there is a different un-ignorable
-// warning otherwise:
-//
-//    proc macro crates and `#[no_link]` crates have no effect without `#[macro_use]`
-#[allow(unused_imports)]
-#[macro_use]
-extern crate structure_macro_impl;
 #[doc(hidden)]
-pub use structure_macro_impl::*;
-
-proc_macro_expr_decl! {
-    structure! => structure_impl
-}
+pub use structure_macro_impl::structure;
