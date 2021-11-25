@@ -19,7 +19,8 @@ appveyor = { repository = "liranringel/structure" }
 
 [dependencies]
 structure-macro-impl = { version = "0.1.2", path = "structure-macro-impl" }
-byteorder = { version = "1", default-features = false 
+byteorder = { version = "1", default-features = false }
+core2 = { version = "0.3", default-features = false }
 
 [features]
 std = ["byteorder/std"]

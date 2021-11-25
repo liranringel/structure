@@ -1,3 +1,4 @@
+#![cfg_attr(not(feature = "std"), no_std)]
 //! Use format strings to create strongly-typed data pack/unpack interfaces (inspired by Python's `struct` library).
 //!
 //!
@@ -132,10 +133,14 @@
 //! * structure!() macro takes a literal string as an argument.
 //! * It's called `structure` because `struct` is a reserved keyword in Rust.
 
-#![cfg_attr(not(feature = "std"), no_std)]
 
 #[doc(hidden)]
-pub extern crate byteorder;
+#[cfg(not(feature = "std"))]
+pub use core2::io::{Cursor, Error, ErrorKind, Read, Result, Write};
+
+#[doc(hidden)]
+#[cfg(feature = "std")]
+pub use std::io::{Cursor, Error, ErrorKind, Read, Result, Write};
 
 #[doc(hidden)]
 pub use structure_macro_impl::structure;

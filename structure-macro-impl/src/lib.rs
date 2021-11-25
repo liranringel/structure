@@ -1,10 +1,13 @@
 #![recursion_limit = "128"]
 
 extern crate proc_macro;
+extern crate alloc;
 
-use std::mem;
-use std::os::raw::c_void;
-use std::string::String;
+use alloc::string::String;
+use core::mem;
+use core::ffi::c_void;
+
+#[allow(unused_imports)]
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
 
@@ -40,10 +43,11 @@ pub fn structure(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
         #[derive(Debug)]
         #[allow(non_camel_case_types)]
         struct #struct_name;
+        
         #[allow(unused_imports)]
-        use std::io::{Result, Write, Read, Error, ErrorKind, Cursor};
-        #[allow(unused_imports)]
-        use std::os::raw::c_void;
+        use structure::{Result, Write, Read, Error, ErrorKind, Cursor};
+        use core::ffi::c_void;
+
         #[allow(unused_imports)]
         use structure::byteorder::{WriteBytesExt, ReadBytesExt, BigEndian, LittleEndian};
 
