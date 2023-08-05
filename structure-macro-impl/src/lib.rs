@@ -1,11 +1,10 @@
 #![recursion_limit = "128"]
 
 extern crate proc_macro;
-extern crate alloc;
 
-use alloc::string::String;
-use core::mem;
-use core::ffi::c_void;
+use std::string::String;
+use std::mem;
+use std::os::raw::c_void;
 
 #[allow(unused_imports)]
 use proc_macro2::{Ident, Span, TokenStream};
