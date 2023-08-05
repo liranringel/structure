@@ -45,8 +45,8 @@ pub fn structure(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
         use structure::{Result, Write, Read, Error, ErrorKind, Cursor};
         use core::ffi::c_void;
 
-        #[allow(unused_imports)]
-        use structure::byteorder::{WriteBytesExt, ReadBytesExt, BigEndian, LittleEndian};
+        #[cfg(feature = "std")]
+        use structure::{WriteBytesExt, ReadBytesExt, BigEndian, LittleEndian};
 
         #[allow(unused)] static TRUE_BUF: &[u8] = &[1];
         #[allow(unused)] static FALSE_BUF: &[u8] = &[0];
