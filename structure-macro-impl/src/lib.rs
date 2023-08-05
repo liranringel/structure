@@ -296,7 +296,7 @@ fn calc_size(values: &[StructValue]) -> usize {
     let mut size = 0;
     for v in values {
         if v.type_name().starts_with("*") {
-            mem::size_of::<*const c_void>();
+            _ = mem::size_of::<*const c_void>();
         }
         let type_size = match v.type_name().as_str() {
             "i8" => mem::size_of::<i8>(),
