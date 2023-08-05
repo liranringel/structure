@@ -1,7 +1,5 @@
 #![recursion_limit = "128"]
 
-extern crate proc_macro;
-
 use std::string::String;
 use std::mem;
 use std::os::raw::c_void;
