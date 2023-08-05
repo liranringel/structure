@@ -1,9 +1,6 @@
 use structure::{structure, ErrorKind, Cursor};
 use core::ffi::c_void;
 
-#[allow(unused_imports)]
-use structure::byteorder::{WriteBytesExt, ReadBytesExt, BigEndian, LittleEndian};
-
 use core::mem::transmute;
 
 #[test]
