@@ -41,7 +41,6 @@ pub fn structure(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
         #[allow(non_camel_case_types)]
         struct #struct_name;
         
-        #[allow(unused_imports)]
         use structure::{Result, Write, Read, Error, ErrorKind, Cursor};
         use core::ffi::c_void;
 
