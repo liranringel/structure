@@ -133,11 +133,6 @@
 //! * structure!() macro takes a literal string as an argument.
 //! * It's called `structure` because `struct` is a reserved keyword in Rust.
 
-
-#[doc(hidden)]
-#[cfg(not(feature = "std"))]
-pub use core2::io::{Cursor, Error, ErrorKind, Read, Result, Write};
-
 #[doc(hidden)]
 #[cfg(feature = "std")]
 pub use std::io::{Cursor, Error, ErrorKind, Read, Result, Write};
@@ -148,7 +143,19 @@ pub use byteorder::{WriteBytesExt, ReadBytesExt, BigEndian, LittleEndian};
 
 #[doc(hidden)]
 #[cfg(not(feature = "std"))]
-pub use byteorder::{BigEndian, LittleEndian};
+mod byteorder_ext;
+
+#[doc(hidden)]
+#[cfg(not(feature = "std"))]
+pub use core2::io::{Cursor, Error, ErrorKind, Read, Result, Write};
+
+#[doc(hidden)]
+#[cfg(not(feature = "std"))]
+pub use byteorder::{BigEndian, LittleEndian, ByteOrder};
+
+#[doc(hidden)]
+#[cfg(not(feature = "std"))]
+pub use byteorder_ext::{ReadBytesExt, WriteBytesExt};
 
 #[doc(hidden)]
 pub use structure_macro_impl::structure;
