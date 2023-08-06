@@ -1,5 +1,6 @@
 [package]
 name = "structure-macro-impl"
+edition = "2018"
 version = "0.1.2" # remember to update the dependency in the root crate
 authors = ["Liran Ringel <liranringel@gmail.com>"]
 description = "Procedural macro crate for the structure crate."
@@ -11,5 +12,5 @@ include = ["Cargo.toml", "src/**/*.rs", "README.md", "LICENSE-APACHE", "LICENSE-
 proc-macro = true
 
 [dependencies]
-proc-macro-hack = "0.4"
-quote = "0.3"
+proc-macro2 = "1.0"
+quote = "1.0"

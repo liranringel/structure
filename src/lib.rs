@@ -1,3 +1,4 @@
+#![cfg_attr(not(feature = "std"), no_std)]
 //! Use format strings to create strongly-typed data pack/unpack interfaces (inspired by Python's `struct` library).
 //!
 //!
@@ -132,23 +133,29 @@
 //! * structure!() macro takes a literal string as an argument.
 //! * It's called `structure` because `struct` is a reserved keyword in Rust.
 
-#[macro_use]
-extern crate proc_macro_hack;
+#[doc(hidden)]
+#[cfg(feature = "std")]
+pub use std::io::{Cursor, Error, ErrorKind, Read, Result, Write};
 
 #[doc(hidden)]
-pub extern crate byteorder;
+#[cfg(feature = "std")]
+pub use byteorder::{WriteBytesExt, ReadBytesExt, BigEndian, LittleEndian};
 
-
-// Allow the "unused" #[macro_use] because there is a different un-ignorable
-// warning otherwise:
-//
-//    proc macro crates and `#[no_link]` crates have no effect without `#[macro_use]`
-#[allow(unused_imports)]
-#[macro_use]
-extern crate structure_macro_impl;
 #[doc(hidden)]
-pub use structure_macro_impl::*;
+#[cfg(not(feature = "std"))]
+mod byteorder_ext;
 
-proc_macro_expr_decl! {
-    structure! => structure_impl
-}
+#[doc(hidden)]
+#[cfg(not(feature = "std"))]
+pub use core2::io::{Cursor, Error, ErrorKind, Read, Result, Write};
+
+#[doc(hidden)]
+#[cfg(not(feature = "std"))]
+pub use byteorder::{BigEndian, LittleEndian, ByteOrder};
+
+#[doc(hidden)]
+#[cfg(not(feature = "std"))]
+pub use byteorder_ext::{ReadBytesExt, WriteBytesExt};
+
+#[doc(hidden)]
+pub use structure_macro_impl::structure;

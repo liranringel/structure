@@ -1,11 +1,7 @@
-#[macro_use]
-extern crate structure;
+use structure::{structure, ErrorKind, Cursor};
+use core::ffi::c_void;
 
-use std::os::raw::c_void;
-use std::mem::transmute;
-use std::io::ErrorKind;
-use std::io::Cursor;
-
+use core::mem::transmute;
 
 #[test]
 fn pack() {
